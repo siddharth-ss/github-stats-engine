@@ -67,15 +67,13 @@ export default async (req, res) => {
   try {
     // Data key must cover every arg fetchTopLanguages receives
     const dataKey = `toplangs:${username}:${exclude_repo}:${size_weight}:${count_weight}`;
-    const topLangs = await microCache(
-      dataKey,
-      () =>
-        fetchTopLanguages(
-          username,
-          parseArray(exclude_repo),
-          size_weight,
-          count_weight
-        )
+    const topLangs = await microCache(dataKey, () =>
+      fetchTopLanguages(
+        username,
+        parseArray(exclude_repo),
+        size_weight,
+        count_weight,
+      ),
     );
 
     let cacheSeconds = clampValue(
@@ -86,11 +84,9 @@ export default async (req, res) => {
     cacheSeconds = process.env.CACHE_SECONDS
       ? parseInt(process.env.CACHE_SECONDS, 10) || cacheSeconds
       : cacheSeconds;
+    void cacheSeconds;
 
-    res.setHeader(
-      "Cache-Control",
-      `max-age=${86400}, s-maxage=${86400}`,
-    );
+    res.setHeader("Cache-Control", `max-age=${86400}, s-maxage=${86400}`);
 
     // 🔒 Normalize visual params (prevents cache explosion)
     const normalizedParams = normalizeParams({
@@ -130,7 +126,7 @@ export default async (req, res) => {
         locale: locale ? locale.toLowerCase() : null,
         disable_animations: parseBoolean(disable_animations),
         hide_progress: parseBoolean(hide_progress),
-      })
+      }),
     );
 
     return res.send(svg);

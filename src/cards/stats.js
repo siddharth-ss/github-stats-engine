@@ -62,11 +62,11 @@ const createTextNode = ({
   return `
     <g class="stagger" style="animation-delay: ${staggerDelay}ms" transform="translate(25, 0)">
       ${iconSvg}
-      <text class="stat ${
+      <text data-testid="stat-label" class="stat stat-label ${
         bold ? " bold" : "not_bold"
       }" ${labelOffset} y="12.5">${label}:</text>
       <text
-        class="stat ${bold ? " bold" : "not_bold"}"
+        class="stat stat-value ${bold ? " bold" : "not_bold"}"
         x="${(showIcons ? 140 : 120) + shiftValuePos}"
         y="12.5"
         data-testid="${id}"
@@ -139,6 +139,7 @@ const getStyles = ({
   return `
     .stat {
       font: 600 14px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: ${textColor};
+      letter-spacing: 0.1px;
     }
     @supports(-moz-appearance: auto) {
       /* Selector detects Firefox */
@@ -169,16 +170,16 @@ const getStyles = ({
     .rank-circle-rim {
       stroke: ${ringColor};
       fill: none;
-      stroke-width: 6;
-      opacity: 0.2;
+      stroke-width: 7;
+      opacity: 0.16;
     }
     .rank-circle {
       stroke: ${ringColor};
       stroke-dasharray: 250;
       fill: none;
-      stroke-width: 6;
+      stroke-width: 7;
       stroke-linecap: round;
-      opacity: 0.8;
+      opacity: 0.9;
       transform-origin: -10px 8px;
       transform: rotate(-90deg);
       animation: rankAnimation 1s forwards ease-in-out;
@@ -387,13 +388,6 @@ const renderStatsCard = (stats, options = {}) => {
     );
   }
 
-  // Calculate the card height depending on how many items there are
-  // but if rank circle is visible clamp the minimum height to `150`
-  let height = Math.max(
-    45 + (statItems.length + 1) * lheight,
-    hide_rank ? 0 : statItems.length ? 150 : 180,
-  );
-
   // the lower the user's percentile the better
   const progress = 100 - rank.percentile;
   const cssStyles = getStyles({
@@ -445,6 +439,18 @@ const renderStatsCard = (stats, options = {}) => {
   if (width < minCardWidth) {
     width = minCardWidth;
   }
+
+  // Give wide cards a two-column grid while keeping the compact, single-column
+  // layout for README embeds and narrow custom widths.
+  const useTwoColumnLayout =
+    width >= 560 && statItems.length >= 4 && !isLongLocale;
+  const rowCount = useTwoColumnLayout
+    ? Math.ceil(statItems.length / 2)
+    : statItems.length;
+  const height = Math.max(
+    45 + (rowCount + 1) * lheight,
+    hide_rank ? 0 : statItems.length ? 150 : 180,
+  );
 
   const card = new Card({
     customTitle: custom_title,
@@ -524,17 +530,31 @@ const renderStatsCard = (stats, options = {}) => {
 
   card.setAccessibilityLabel({
     title: `${card.title}, Rank: ${rank.level}`,
-    desc: labels,
+    desc: `${labels}. Rank: ${rank.level}, top ${rank.percentile}% of GitHub users.`,
   });
+
+  const statsBody = useTwoColumnLayout
+    ? `<g data-testid="stat-grid" class="stat-grid">${statItems
+        .map((item, index) => {
+          const column = index % 2;
+          const row = Math.floor(index / 2);
+          const statsAreaWidth = hide_rank ? width - 50 : width - 190;
+          const columnWidth = statsAreaWidth / 2;
+          return `<g transform="translate(${column * columnWidth}, ${
+            row * lheight
+          })">${item}</g>`;
+        })
+        .join("")}</g>`
+    : flexLayout({
+        items: statItems,
+        gap: lheight,
+        direction: "column",
+      }).join("");
 
   return card.render(`
     ${rankCircle}
     <svg x="0" y="0">
-      ${flexLayout({
-        items: statItems,
-        gap: lheight,
-        direction: "column",
-      }).join("")}
+      ${statsBody}
     </svg>
   `);
 };

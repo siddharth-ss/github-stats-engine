@@ -137,6 +137,34 @@ describe("Test renderStatsCard", () => {
     expect(document.querySelector("svg")).toHaveAttribute("width", "500");
   });
 
+  it("should use a two-column stat grid on wide cards", () => {
+    document.body.innerHTML = renderStatsCard(stats, { card_width: 600 });
+
+    expect(queryByTestId(document.body, "stat-grid")).toBeInTheDocument();
+    expect(document.querySelectorAll('[data-testid="stat-label"]').length).toBe(
+      5,
+    );
+  });
+
+  it("should keep a single-column layout on narrow cards", () => {
+    document.body.innerHTML = renderStatsCard(stats, { card_width: 450 });
+
+    expect(queryByTestId(document.body, "stat-grid")).not.toBeInTheDocument();
+    expect(
+      document.querySelector('g[transform="translate(0, 25)"]'),
+    ).toBeInTheDocument();
+  });
+
+  it("should expose accessible rank and statistic descriptions", () => {
+    const svg = renderStatsCard(stats, {
+      custom_title: "Siddharth S S's GitHub Stats",
+    });
+
+    expect(svg).toContain("Siddharth S S's GitHub Stats, Rank: A+");
+    expect(svg).toContain("Rank: A+, top 40% of GitHub users");
+    expect(svg).toContain('data-testid="stat-label"');
+  });
+
   it("should render with custom width set and limit minimum width", () => {
     document.body.innerHTML = renderStatsCard(stats, { card_width: 1 });
     expect(document.querySelector("svg")).toHaveAttribute("width", "420");

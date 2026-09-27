@@ -69,21 +69,21 @@ function getCardUrl(type) {
   switch(currentType) {
     case 'core':
     case 'streak':
-      username = githubUsernameInput.value.trim() || "pranesh-2005";
+      username = githubUsernameInput.value.trim() || "siddharth-ss";
       break;
     case 'wakatime':
-      username = wakatimeUsernameInput.value.trim() || "praneshjs";
+      username = wakatimeUsernameInput.value.trim() || "siddharth-ss";
       break;
     case 'repo':
-      username = repoUsernameInput.value.trim() || "pranesh-2005";
-      repo = repoInput.value.trim() || "github-readme-stats-fast";
+      username = repoUsernameInput.value.trim() || "siddharth-ss";
+      repo = repoInput.value.trim() || "github-stats-engine";
       break;
     case 'gist':
       gistId = gistInput.value.trim() || "bbfce31e0217a3689c8d961a356cb10d";
       break;
   }
 
-  let base = "https://github-readme-stats-fast.vercel.app/api";
+  let base = `${window.location.origin}/api`;
 
   switch(type) {
     case "stats":

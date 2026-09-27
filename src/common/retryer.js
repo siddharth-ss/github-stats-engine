@@ -1,16 +1,15 @@
 import { CustomError, logger } from "./utils.js";
 
-// Script variables.
-
 // Count the number of GitHub API tokens available.
 const PATs = Object.keys(process.env).filter((key) =>
   /PAT_\d*$/.exec(key),
 ).length;
+
 const RETRIES = process.env.NODE_ENV === "test" ? 7 : PATs;
 
 /**
- * @typedef {import("axios").AxiosResponse} AxiosResponse Axios response.
- * @typedef {(variables: object, token: string) => Promise<AxiosResponse>} FetcherFunction Fetcher function.
+ * @typedef {import("axios").AxiosResponse} AxiosResponse
+ * @typedef {(variables: object, token: string) => Promise<AxiosResponse>} FetcherFunction
  */
 
 /**
@@ -19,56 +18,63 @@ const RETRIES = process.env.NODE_ENV === "test" ? 7 : PATs;
  * @param {FetcherFunction} fetcher The fetcher function.
  * @param {object} variables Object with arguments to pass to the fetcher function.
  * @param {number} retries How many times to retry.
- * @returns {Promise<T>} The response from the fetcher function.
+ * @returns {Promise<AxiosResponse>}
  */
 const retryer = async (fetcher, variables, retries = 0) => {
   if (!RETRIES) {
-    throw new CustomError("No GitHub API tokens found", CustomError.NO_TOKENS);
+    throw new CustomError(
+      "No GitHub API tokens found",
+      CustomError.NO_TOKENS,
+    );
   }
+
   if (retries > RETRIES) {
     throw new CustomError(
       "Downtime due to GitHub API rate limiting",
       CustomError.MAX_RETRY,
     );
   }
+
   try {
-    // try to fetch with the first token since RETRIES is 0 index i'm adding +1
-    let response = await fetcher(
+    const response = await fetcher(
       variables,
       process.env[`PAT_${retries + 1}`],
       retries,
     );
 
-    // prettier-ignore
-    const isRateExceeded = response.data.errors && response.data.errors[0].type === "RATE_LIMITED";
+    const isRateExceeded =
+      response?.data?.errors?.[0]?.type === "RATE_LIMITED";
 
-    // if rate limit is hit increase the RETRIES and recursively call the retryer
-    // with username, and current RETRIES
     if (isRateExceeded) {
       logger.log(`PAT_${retries + 1} Failed`);
-      retries++;
-      // directly return from the function
-      return retryer(fetcher, variables, retries);
+      return retryer(fetcher, variables, retries + 1);
     }
 
-    // finally return the response
     return response;
   } catch (err) {
-    // prettier-ignore
-    // also checking for bad credentials if any tokens gets invalidated
-    const isBadCredential = err.response.data && err.response.data.message === "Bad credentials";
+    const response = err?.response;
+    const responseData = response?.data;
+
+    const isBadCredential =
+      responseData?.message === "Bad credentials";
+
     const isAccountSuspended =
-      err.response.data &&
-      err.response.data.message === "Sorry. Your account was suspended.";
+      responseData?.message ===
+      "Sorry. Your account was suspended.";
 
     if (isBadCredential || isAccountSuspended) {
       logger.log(`PAT_${retries + 1} Failed`);
-      retries++;
-      // directly return from the function
-      return retryer(fetcher, variables, retries);
-    } else {
-      return err.response;
+      return retryer(fetcher, variables, retries + 1);
     }
+
+    // Preserve the original network/API error instead of causing
+    // a secondary "reading 'data'" exception.
+    if (!response) {
+      logger.error(err);
+      throw err;
+    }
+
+    return response;
   }
 };
 

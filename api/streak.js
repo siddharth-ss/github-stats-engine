@@ -63,7 +63,9 @@ export default async (req, res) => {
     }
 
     const dataKey = `streak:${username}`;
-    const streak = await microCache(dataKey, () => fetchStreak(username, token));
+    const streak = await microCache(dataKey, () =>
+      fetchStreak(username, token),
+    );
 
     // Streaks are pinned to a fixed 1 hour CDN cache; `cache_seconds` is
     // deliberately not honoured here.
@@ -86,7 +88,7 @@ export default async (req, res) => {
         text_color,
         bg_color,
         border_color,
-      })
+      }),
     );
     return res.send(svg);
   } catch (err) {
@@ -95,17 +97,13 @@ export default async (req, res) => {
       `max-age=${CONSTANTS.ERROR_CACHE_SECONDS / 2}, s-maxage=${CONSTANTS.ERROR_CACHE_SECONDS}, stale-while-revalidate=${CONSTANTS.ONE_DAY}`,
     );
     return res.send(
-      renderError(
-        err.message || "Something went wrong",
-        err.secondaryMessage,
-        {
-          title_color,
-          text_color,
-          bg_color,
-          border_color,
-          theme,
-        },
-      ),
+      renderError(err.message || "Something went wrong", err.secondaryMessage, {
+        title_color,
+        text_color,
+        bg_color,
+        border_color,
+        theme,
+      }),
     );
   }
 };

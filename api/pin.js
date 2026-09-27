@@ -68,11 +68,9 @@ export default async (req, res) => {
     cacheSeconds = process.env.CACHE_SECONDS
       ? parseInt(process.env.CACHE_SECONDS, 10) || cacheSeconds
       : cacheSeconds;
+    void cacheSeconds;
 
-    res.setHeader(
-      "Cache-Control",
-      `max-age=${604800}, s-maxage=${604800}`,
-    );
+    res.setHeader("Cache-Control", `max-age=${604800}, s-maxage=${604800}`);
 
     const normalizedParams = normalizeParams({
       hide_border,

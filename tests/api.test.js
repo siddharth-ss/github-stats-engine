@@ -97,6 +97,49 @@ afterEach(() => {
 });
 
 describe("Test /api/", () => {
+  it("should use DEFAULT_USERNAME when username is omitted", async () => {
+    const previousDefault = process.env.DEFAULT_USERNAME;
+    process.env.DEFAULT_USERNAME = "siddharth-ss";
+    const req = { query: {} };
+    const res = { setHeader: jest.fn(), send: jest.fn() };
+    mock.onPost("https://api.github.com/graphql").replyOnce(200, data_stats);
+
+    await api(req, res);
+
+    expect(mock.history.post[0].data).toContain("siddharth-ss");
+    expect(res.send).toHaveBeenCalledWith(renderStatsCard(stats));
+    if (previousDefault === undefined) delete process.env.DEFAULT_USERNAME;
+    else process.env.DEFAULT_USERNAME = previousDefault;
+  });
+
+  it("should prefer an explicit username over DEFAULT_USERNAME", async () => {
+    const previousDefault = process.env.DEFAULT_USERNAME;
+    process.env.DEFAULT_USERNAME = "siddharth-ss";
+    const { req, res } = faker({ username: "anuraghazra" }, data_stats);
+
+    await api(req, res);
+
+    expect(mock.history.post[0].data).toContain("anuraghazra");
+    expect(mock.history.post[0].data).not.toContain("siddharth-ss");
+    if (previousDefault === undefined) delete process.env.DEFAULT_USERNAME;
+    else process.env.DEFAULT_USERNAME = previousDefault;
+  });
+
+  it("should preserve the missing username error when no default exists", async () => {
+    const previousDefault = process.env.DEFAULT_USERNAME;
+    delete process.env.DEFAULT_USERNAME;
+    const req = { query: {} };
+    const res = { setHeader: jest.fn(), send: jest.fn() };
+
+    await api(req, res);
+
+    expect(res.send).toHaveBeenCalledWith(
+      renderError("Something went wrong", "Missing `username` parameter"),
+    );
+    if (previousDefault === undefined) delete process.env.DEFAULT_USERNAME;
+    else process.env.DEFAULT_USERNAME = previousDefault;
+  });
+
   it("should test the request", async () => {
     const { req, res } = faker({}, data_stats);
 

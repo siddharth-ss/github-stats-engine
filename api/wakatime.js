@@ -65,12 +65,11 @@ export default async (req, res) => {
     cacheSeconds = process.env.CACHE_SECONDS
       ? parseInt(process.env.CACHE_SECONDS, 10) || cacheSeconds
       : cacheSeconds;
+    void cacheSeconds;
 
     res.setHeader(
       "Cache-Control",
-      `max-age=${
-        86400
-      }, s-maxage=${86400}, stale-while-revalidate=${CONSTANTS.ONE_DAY}`,
+      `max-age=${86400}, s-maxage=${86400}, stale-while-revalidate=${CONSTANTS.ONE_DAY}`,
     );
 
     const normalizedParams = normalizeParams({
