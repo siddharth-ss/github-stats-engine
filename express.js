@@ -8,7 +8,7 @@ import streakCard from "./api/streak.js";
 import express from "express";
 
 const app = express();
-app.listen(process.env.port || 9000);
+app.listen(process.env.port || 9004);
 
 app.get("/", statsCard);
 app.get("/pin", repoCard);
