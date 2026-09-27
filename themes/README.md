@@ -10,3 +10,9 @@ http://localhost:9004/?username=siddharth-ss&theme=dark&show_icons=true
 Theme names are defined in [themes/index.js](./index.js). The card renderer
 also accepts custom `title_color`, `icon_color`, `text_color`, `bg_color`,
 `ring_color`, and `border_color` values.
+
+The clean red theme is available as `red_blank`:
+
+```text
+http://localhost:9004/api?username=siddharth-ss&theme=red_blank&show_icons=true
+```

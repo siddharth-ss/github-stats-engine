@@ -45,6 +45,14 @@ export const themes = {
     text_color: "9f9f9f",
     bg_color: "151515",
   },
+  red_blank: {
+    title_color: "ff4d5a",
+    icon_color: "ff5c66",
+    text_color: "f5d6d8",
+    bg_color: "1b0d10",
+    border_color: "5c2027",
+    ring_color: "ff4d5a",
+  },
   radical: {
     title_color: "fe428e",
     icon_color: "f8d847",

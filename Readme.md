@@ -42,6 +42,22 @@ The main stats card supports `username`, `theme`, `hide`, `hide_border`,
 http://localhost:9004/?username=siddharth-ss&theme=dark&show_icons=true&hide=contribs
 ```
 
+Open the interactive preview at
+`http://127.0.0.1:9004/preview/`. It fetches the selected GitHub profile and
+shows the avatar, `@username`, follower/following counts, Stats, Streak, and
+Top Languages cards. The profile summary uses `/api/profile?username=...` and
+does not accept manually entered counts.
+
+The built-in `red_blank` theme is available on every card:
+
+```text
+http://localhost:9004/api?username=siddharth-ss&theme=red_blank&show_icons=true
+```
+
+Profile metadata and card responses use the existing in-memory cache. Vercel
+automatically maps the handlers in `api/` to `/api`, including
+`/api/profile`.
+
 > [!NOTE]\
 > **Project origin:** This repository is a customized derivative of [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats). The original MIT license and upstream attribution are preserved.
 
@@ -482,7 +498,7 @@ The top languages card shows a GitHub user's most frequently used languages.
 > By default, the language card shows language results only from public repositories. To include languages used in private repositories, you should [deploy your own instance](#deploy-on-your-own) using your own GitHub API token.
 
 > [!NOTE]\
-> Top Languages does not indicate the user's skill level or anything like that; it's a GitHub metric to determine which languages have the most code on GitHub. It is a new feature of github-readme-stats-fast.
+> Top Languages does not indicate the user's skill level or anything like that; it's a GitHub metric to determine which languages have the most code on GitHub. It is a feature of GitHub Stats Engine.
 
 > [!WARNING]\
 > This card shows language usage only inside your own non-forked repositories, not depending on who the author of the commits is. It does not include your contributions into another users/organizations repositories. Currently there are no way to get this data from GitHub API. If you want this behavior to be improved you can support [this feature request](https://github.com/orgs/community/discussions/18230) created by [@rickstaa](https://github.com/rickstaa) inside GitHub Community.

@@ -237,7 +237,7 @@ const fetchStreak = async (username, token) => {
     // 3. compute streaks
     return calculateStreaks(contributions);
   } catch (err) {
-    logger.error(err);
+    logger.error(err?.message || "GitHub request failed");
     throw new CustomError(
       err?.message || "Could not fetch streak data.",
       CustomError.GRAPHQL_ERROR,

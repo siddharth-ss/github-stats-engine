@@ -196,6 +196,50 @@
       flex-wrap: wrap;
     }
 
+    .profile-summary {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 28px 24px 4px;
+      background: #0d1117;
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid #30363d;
+      object-fit: cover;
+    }
+
+    .profile-login {
+      color: #f0f6fc;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .profile-counts,
+    .profile-loading {
+      color: #8b949e;
+      font-size: 14px;
+    }
+
+    .profile-error {
+      color: #ff7b72;
+      font-size: 14px;
+    }
+
+    .profile-retry {
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 6px 12px;
+      background: #161b22;
+      color: #e6edf3;
+      cursor: pointer;
+    }
+
     .preview img {
       border-radius: 12px;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
