@@ -198,7 +198,7 @@ const totalCommitsFetcher = async (username) => {
   try {
     res = await retryer(fetchTotalCommits, { login: username });
   } catch (err) {
-    logger.log(err);
+    logger.log(err?.message || "GitHub request failed");
     // String(err) matches what `new Error(err)` produced before: the Error
     // constructor stringifies a non-string argument the same way.
     throw new Error(String(err));

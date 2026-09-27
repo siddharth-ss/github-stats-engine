@@ -119,7 +119,7 @@ export default async (req, res) => {
     }
   } catch (err) {
     // Return fail boolean if something went wrong.
-    logger.error(err);
+      logger.error(err?.message || "GitHub request failed");
     res.setHeader("Cache-Control", "no-store");
     res.send("Something went wrong: " + err.message);
   }

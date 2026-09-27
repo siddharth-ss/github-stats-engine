@@ -48,7 +48,7 @@
 <body>
   <div class="header">
     <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" alt="GitHub" />
-    <h1>GitHub Readme Stats Preview</h1>
+    <h1>GitHub Stats Engine Preview</h1>
   </div>
   
   <div class="container">
@@ -95,7 +95,7 @@
             <span>👤</span>
             WakaTime Username
           </label>
-          <input type="text" id="wakatime-username" value="siddharth-ss" placeholder="Enter your WakaTime username">
+          <input type="text" id="wakatime-username" value="" placeholder="Enter your WakaTime username">
         </div>
         
         <!-- Repository Pin Fields -->
@@ -112,7 +112,7 @@
             <span>📁</span>
             Repository Name
           </label>
-          <input type="text" id="repo" value="github-readme-stats-fast" placeholder="e.g. my-awesome-project">
+          <input type="text" id="repo" value="github-stats-engine" placeholder="e.g. my-awesome-project">
         </div>
         
         <!-- Gist Pin Fields -->
@@ -121,7 +121,7 @@
             <span>📝</span>
             Gist ID
           </label>
-          <input type="text" id="gist-id" value="bbfce31e0217a3689c8d961a356cb10d" placeholder="Enter gist ID">
+          <input type="text" id="gist-id" value="" placeholder="Enter gist ID">
         </div>
         
         <!-- Theme (Common for all) -->
@@ -140,10 +140,22 @@
             <option value="github_dark">GitHub Dark</option>
             <option value="nord">Nord</option>
             <option value="gruvbox">Gruvbox</option>
+            <option value="red_blank">Red Blank</option>
           </select>
         </div>
       </div>
       
+      <section class="profile-summary" id="profile-summary" aria-live="polite">
+        <div class="profile-loading" id="profile-loading">Loading GitHub profile…</div>
+        <img id="profile-avatar" class="profile-avatar" alt="" hidden>
+        <div class="profile-details" id="profile-details" hidden>
+          <div class="profile-login" id="profile-login"></div>
+          <div class="profile-counts" id="profile-counts"></div>
+        </div>
+        <div class="profile-error" id="profile-error" hidden></div>
+        <button class="profile-retry" id="profile-retry" type="button" hidden>Retry profile</button>
+      </section>
+
       <div class="preview" id="preview">
         <div class="loading-overlay" id="loading-overlay">
           <div class="spinner"></div>

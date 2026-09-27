@@ -70,7 +70,7 @@ const retryer = async (fetcher, variables, retries = 0) => {
     // Preserve the original network/API error instead of causing
     // a secondary "reading 'data'" exception.
     if (!response) {
-      logger.error(err);
+      logger.error(err?.message || "GitHub request failed");
       throw err;
     }
 

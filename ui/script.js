@@ -13,9 +13,17 @@ const repoInput = document.getElementById('repo');
 const gistInput = document.getElementById('gist-id');
 const loadingOverlay = document.getElementById('loading-overlay');
 const successToast = document.getElementById('success-toast');
+const profileLoading = document.getElementById('profile-loading');
+const profileAvatar = document.getElementById('profile-avatar');
+const profileDetails = document.getElementById('profile-details');
+const profileLogin = document.getElementById('profile-login');
+const profileCounts = document.getElementById('profile-counts');
+const profileError = document.getElementById('profile-error');
+const profileRetry = document.getElementById('profile-retry');
 
 let currentType = 'core';
 let debounceTimer;
+let profileRequestId = 0;
 
 // Tab switching
 tabs.forEach(tab => {
@@ -72,14 +80,14 @@ function getCardUrl(type) {
       username = githubUsernameInput.value.trim() || "siddharth-ss";
       break;
     case 'wakatime':
-      username = wakatimeUsernameInput.value.trim() || "siddharth-ss";
+      username = wakatimeUsernameInput.value.trim();
       break;
     case 'repo':
       username = repoUsernameInput.value.trim() || "siddharth-ss";
       repo = repoInput.value.trim() || "github-stats-engine";
       break;
     case 'gist':
-      gistId = gistInput.value.trim() || "bbfce31e0217a3689c8d961a356cb10d";
+      gistId = gistInput.value.trim();
       break;
   }
 
@@ -126,6 +134,46 @@ function showError(msg) {
   preview.innerHTML = `<div class="error-message">${msg}</div>`;
 }
 
+async function updateProfile() {
+  const username = githubUsernameInput.value.trim() || "siddharth-ss";
+  const requestId = ++profileRequestId;
+
+  profileLoading.hidden = false;
+  profileLoading.textContent = "Loading GitHub profile…";
+  profileAvatar.hidden = true;
+  profileDetails.hidden = true;
+  profileError.hidden = true;
+  profileRetry.hidden = true;
+
+  try {
+    const response = await fetch(
+      `${window.location.origin}/api/profile?username=${encodeURIComponent(username)}`,
+      { headers: { Accept: "application/json" } },
+    );
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Unable to load GitHub profile");
+    if (requestId !== profileRequestId) return;
+
+    profileAvatar.src = data.avatarUrl;
+    profileAvatar.alt = `GitHub avatar for @${data.login}`;
+    profileLogin.textContent = `@${data.login}`;
+    profileCounts.textContent = `${new Intl.NumberFormat().format(data.followers)} Followers · ${new Intl.NumberFormat().format(data.following)} Following`;
+    profileLoading.hidden = true;
+    profileAvatar.hidden = false;
+    profileDetails.hidden = false;
+  } catch (error) {
+    if (requestId !== profileRequestId) return;
+    profileLoading.hidden = true;
+    profileError.textContent = error.message === "GitHub profile not found"
+      ? error.message
+      : "Unable to load GitHub profile";
+    profileError.hidden = false;
+    profileRetry.hidden = false;
+  }
+}
+
+profileRetry.addEventListener('click', updateProfile);
+
 function showToast(message) {
   const toast = document.getElementById('success-toast');
   toast.querySelector('span:last-child').textContent = message;
@@ -136,6 +184,7 @@ function showToast(message) {
 }
 
 function updatePreview() {
+  updateProfile();
   showLoading();
   
   let urls = [];

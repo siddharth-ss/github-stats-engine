@@ -151,7 +151,7 @@ export default async (_, res) => {
     res.send(JSON.stringify(PATsInfo, null, 2));
   } catch (err) {
     // Throw error if something went wrong.
-    logger.error(err);
+      logger.error(err?.message || "GitHub request failed");
     res.setHeader("Cache-Control", "no-store");
     res.send("Something went wrong: " + err.message);
   }
