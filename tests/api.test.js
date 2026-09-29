@@ -10,7 +10,7 @@ import { expect, it, describe, afterEach } from "@jest/globals";
 const stats = {
   name: "Anurag Hazra",
   login: "anuraghazra",
-  avatarUrl: "https://avatars.example/avatar.png",
+  avatarUrl: "data:image/png;base64,ZmFrZS1hdmF0YXItZGF0YQ==",
   followers: 0,
   following: 0,
   totalStars: 100,
@@ -94,10 +94,19 @@ const faker = (query, data) => {
     setHeader: jest.fn(),
     send: jest.fn(),
   };
+  mock.onGet(/^https:\/\/avatars\.example\//).reply(200, Buffer.from("fake-avatar-data"), {
+    "content-type": "image/png",
+  });
   mock.onPost("https://api.github.com/graphql").replyOnce(200, data);
 
   return { req, res };
 };
+
+beforeEach(() => {
+  mock.onGet(/^https:\/\/avatars\.example\//).reply(200, Buffer.from("fake-avatar-data"), {
+    "content-type": "image/png",
+  });
+});
 
 afterEach(() => {
   mock.reset();
