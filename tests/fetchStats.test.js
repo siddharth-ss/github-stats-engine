@@ -2,7 +2,7 @@ import "@testing-library/jest-dom";
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import { calculateRank } from "../src/calculateRank.js";
-import { fetchStats } from "../src/fetchers/stats.js";
+import { fetchStats, fetchAvatar, isTrustedAvatarUrl } from "../src/fetchers/stats.js";
 import { expect, it, describe, beforeEach, afterEach } from "@jest/globals";
 
 // Test parameters.
@@ -80,7 +80,7 @@ const data_repo_zero_stars = {
 
 const profile = {
   login: "anuraghazra",
-  avatarUrl: "https://avatars.example/avatar.png",
+  avatarUrl: "data:image/png;base64,ZmFrZS1hdmF0YXItZGF0YQ==",
   followers: 100,
   following: 7,
 };
@@ -100,6 +100,9 @@ const mock = new MockAdapter(axios);
 
 beforeEach(() => {
   process.env.FETCH_MULTI_PAGE_STARS = "false"; // Set to `false` to fetch only one page of stars.
+  mock.onGet(/^https:\/\/avatars\.example\//).reply(200, Buffer.from("fake-avatar-data"), {
+    "content-type": "image/png",
+  });
   mock.onPost("https://api.github.com/graphql").reply((cfg) => {
     return [
       200,
@@ -429,5 +432,44 @@ describe("Test fetchStats", () => {
       totalDiscussionsAnswered: 40,
       rank,
     });
+  });
+  it("should convert avatar URL to a data URI when avatar URL exists", async () => {
+    mock.onGet("https://avatars.githubusercontent.com/u/12345?v=4").reply(200, Buffer.from("fake-avatar-data"), {
+      "content-type": "image/png",
+    });
+    const avatarUri = await fetchAvatar("https://avatars.githubusercontent.com/u/12345?v=4");
+    expect(avatarUri).toBe("data:image/png;base64,ZmFrZS1hdmF0YXItZGF0YQ==");
+  });
+
+  it("should return data URI as-is if avatar URL is already a data URI", async () => {
+    const dataUri = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
+    const result = await fetchAvatar(dataUri);
+    expect(result).toBe(dataUri);
+  });
+
+  it("should safely omit avatar when fetch fails without breaking stats card", async () => {
+    mock.onGet("https://avatars.githubusercontent.com/u/failing").reply(500);
+
+    const avatar = await fetchAvatar("https://avatars.githubusercontent.com/u/failing");
+    expect(avatar).toBe("");
+  });
+
+  it("should safely omit avatar when content type is unsupported (e.g. text/html)", async () => {
+    mock.onGet("https://avatars.githubusercontent.com/u/html-response").reply(200, "<html>Not an image</html>", {
+      "content-type": "text/html",
+    });
+
+    const avatar = await fetchAvatar("https://avatars.githubusercontent.com/u/html-response");
+    expect(avatar).toBe("");
+  });
+
+  it("should validate trusted avatar domain and reject SSRF / untrusted URLs", () => {
+    expect(isTrustedAvatarUrl("https://avatars.githubusercontent.com/u/123")).toBe(true);
+    expect(isTrustedAvatarUrl("https://github.com/avatar.png")).toBe(true);
+    expect(isTrustedAvatarUrl("https://avatars0.githubusercontent.com/u/123")).toBe(true);
+    expect(isTrustedAvatarUrl("http://127.0.0.1/internal.png")).toBe(false);
+    expect(isTrustedAvatarUrl("http://localhost/secret.png")).toBe(false);
+    expect(isTrustedAvatarUrl("https://evil-site.com/avatar.png")).toBe(false);
+    expect(isTrustedAvatarUrl("javascript:alert(1)")).toBe(false);
   });
 });

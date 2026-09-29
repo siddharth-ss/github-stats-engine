@@ -233,6 +233,96 @@ const totalCommitsFetcher = async (username) => {
  * @param {boolean} include_discussions_answers Include discussions answers.
  * @returns {Promise<StatsData>} Stats data.
  */
+const avatarCache = new Map();
+
+/**
+ * Validates if the avatar URL is from a trusted GitHub domain.
+ *
+ * @param {string} url Avatar URL.
+ * @returns {boolean} True if the URL is trusted.
+ */
+const isTrustedAvatarUrl = (url) => {
+  if (!url || typeof url !== "string") return false;
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+      return false;
+    }
+    const hostname = parsed.hostname.toLowerCase();
+    return /^([a-z0-9-]+\.)*(githubusercontent\.com|github\.com|avatars\.example)$/i.test(
+      hostname,
+    );
+  } catch {
+    return false;
+  }
+};
+
+const ALLOWED_MIME_TYPES = [
+  "image/png",
+  "image/jpeg",
+  "image/jpg",
+  "image/webp",
+  "image/gif",
+  "image/svg+xml",
+];
+
+/**
+ * Fetches remote GitHub avatar and encodes it into a Base64 data URI.
+ *
+ * @param {string} url Remote avatar URL.
+ * @returns {Promise<string>} Base64 data URI or empty string if failed.
+ */
+const fetchAvatar = async (url) => {
+  if (!url || typeof url !== "string") return "";
+  if (url.startsWith("data:image/")) return url;
+  if (!isTrustedAvatarUrl(url)) return "";
+
+  const cached = avatarCache.get(url);
+  if (cached && cached.dataUri && Date.now() - cached.time < 3600000) {
+    return cached.dataUri;
+  }
+  if (cached && cached.promise) {
+    return await cached.promise;
+  }
+
+  const promise = (async () => {
+    try {
+      const response = await axios.get(url, {
+        responseType: "arraybuffer",
+        timeout: 3000,
+      });
+
+      if (response.status !== 200 || !response.data) {
+        return "";
+      }
+
+      const rawContentType =
+        response.headers["content-type"] ||
+        response.headers["Content-Type"] ||
+        "";
+      const mimeType = String(rawContentType).toLowerCase().split(";")[0].trim();
+
+      if (!ALLOWED_MIME_TYPES.includes(mimeType)) {
+        return "";
+      }
+
+      const base64 = Buffer.from(response.data).toString("base64");
+      const dataUri = `data:${mimeType};base64,${base64}`;
+
+      if (avatarCache.size > 500) {
+        avatarCache.clear();
+      }
+      avatarCache.set(url, { dataUri, time: Date.now() });
+      return dataUri;
+    } catch {
+      return "";
+    }
+  })();
+
+  avatarCache.set(url, { promise });
+  return await promise;
+};
+
 const fetchStats = async (
   username,
   include_all_commits = false,
@@ -296,7 +386,7 @@ const fetchStats = async (
 
   stats.name = user.name || user.login;
   stats.login = user.login || username;
-  stats.avatarUrl = user.avatarUrl || "";
+  stats.avatarUrl = user.avatarUrl ? await fetchAvatar(user.avatarUrl) : "";
   stats.followers = user.followers?.totalCount ?? 0;
   stats.following = user.following?.totalCount ?? 0;
 
@@ -352,5 +442,5 @@ const fetchStats = async (
   return stats;
 };
 
-export { fetchStats };
+export { fetchStats, fetchAvatar, isTrustedAvatarUrl };
 export default fetchStats;
