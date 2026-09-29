@@ -9,6 +9,10 @@ import { expect, it, describe, afterEach } from "@jest/globals";
 
 const stats = {
   name: "Anurag Hazra",
+  login: "anuraghazra",
+  avatarUrl: "https://avatars.example/avatar.png",
+  followers: 0,
+  following: 0,
   totalStars: 100,
   totalCommits: 200,
   totalIssues: 300,
@@ -37,6 +41,8 @@ const data_stats = {
   data: {
     user: {
       name: stats.name,
+      login: stats.login,
+      avatarUrl: stats.avatarUrl,
       repositoriesContributedTo: { totalCount: stats.contributedTo },
       contributionsCollection: {
         totalCommitContributions: stats.totalCommits,
@@ -47,6 +53,7 @@ const data_stats = {
       openIssues: { totalCount: stats.totalIssues },
       closedIssues: { totalCount: 0 },
       followers: { totalCount: 0 },
+      following: { totalCount: stats.following },
       repositoryDiscussions: { totalCount: stats.totalDiscussionsStarted },
       repositoryDiscussionComments: {
         totalCount: stats.totalDiscussionsAnswered,
@@ -147,6 +154,19 @@ describe("Test /api/", () => {
 
     expect(res.setHeader).toBeCalledWith("Content-Type", "image/svg+xml");
     expect(res.send).toBeCalledWith(renderStatsCard(stats, { ...req.query }));
+  });
+
+  it("should include profile data in the returned stats SVG", async () => {
+    const { res } = faker({}, data_stats);
+
+    await api({ query: { username: stats.login } }, res);
+
+    const svg = res.send.mock.calls[0][0];
+    expect(svg).toContain(stats.avatarUrl);
+    expect(svg).toContain(`@${stats.login}`);
+    expect(svg).toContain("0 Followers");
+    expect(svg).toContain("0 Following");
+    expect(svg).toContain('data-testid="profile-header"');
   });
 
   it("should render error card on error", async () => {

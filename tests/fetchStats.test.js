@@ -10,6 +10,8 @@ const data_stats = {
   data: {
     user: {
       name: "Anurag Hazra",
+      login: "anuraghazra",
+      avatarUrl: "https://avatars.example/avatar.png",
       repositoriesContributedTo: { totalCount: 61 },
       contributionsCollection: {
         totalCommitContributions: 100,
@@ -20,6 +22,7 @@ const data_stats = {
       openIssues: { totalCount: 100 },
       closedIssues: { totalCount: 100 },
       followers: { totalCount: 100 },
+      following: { totalCount: 7 },
       repositoryDiscussions: { totalCount: 10 },
       repositoryDiscussionComments: { totalCount: 40 },
       repositories: {
@@ -75,6 +78,13 @@ const data_repo_zero_stars = {
   },
 };
 
+const profile = {
+  login: "anuraghazra",
+  avatarUrl: "https://avatars.example/avatar.png",
+  followers: 100,
+  following: 7,
+};
+
 const error = {
   errors: [
     {
@@ -117,6 +127,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
@@ -130,6 +141,8 @@ describe("Test fetchStats", () => {
       totalDiscussionsAnswered: 0,
       rank,
     });
+    expect(mock.history.post[0].data).toContain("avatarUrl");
+    expect(mock.history.post[0].data).toContain("following");
   });
 
   it("should stop fetching when there are repos with zero stars", async () => {
@@ -153,6 +166,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
@@ -195,6 +209,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 1000,
@@ -244,6 +259,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 1000,
@@ -275,6 +291,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
@@ -306,6 +323,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
@@ -337,6 +355,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
@@ -366,6 +385,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
@@ -395,6 +415,7 @@ describe("Test fetchStats", () => {
     });
 
     expect(stats).toStrictEqual({
+      ...profile,
       contributedTo: 61,
       name: "Anurag Hazra",
       totalCommits: 100,
