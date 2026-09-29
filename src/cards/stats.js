@@ -5,6 +5,7 @@ import { icons, rankIcon } from "../common/icons.js";
 import {
   CustomError,
   clampValue,
+  encodeHTML,
   flexLayout,
   getCardColors,
   kFormatter,
@@ -128,7 +129,6 @@ const getProgressAnimation = ({ progress }) => {
  * @returns {string} Card CSS styles.
  */
 const getStyles = ({
-  // eslint-disable-next-line no-unused-vars
   titleColor,
   textColor,
   iconColor,
@@ -144,6 +144,12 @@ const getStyles = ({
     @supports(-moz-appearance: auto) {
       /* Selector detects Firefox */
       .stat { font-size:12px; }
+    }
+    .profile-login {
+      font: 700 15px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${titleColor};
+    }
+    .profile-meta {
+      font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: ${textColor};
     }
     .stagger {
       opacity: 0;
@@ -203,6 +209,10 @@ const getStyles = ({
 const renderStatsCard = (stats, options = {}) => {
   const {
     name,
+    login,
+    avatarUrl,
+    followers = 0,
+    following = 0,
     totalStars,
     totalCommits,
     totalIssues,
@@ -381,6 +391,21 @@ const renderStatsCard = (stats, options = {}) => {
       }),
     );
 
+  const hasProfile = Boolean(login);
+  const profileHeaderHeight = hasProfile ? 50 : 0;
+  const profileLogin = login || name;
+  const compactLogin = profileLogin.length > 23
+    ? `${profileLogin.slice(0, 20)}…`
+    : profileLogin;
+  const profileHeader = hasProfile
+    ? `<g data-testid="profile-header" class="profile-header" transform="translate(25, 0)">
+        ${avatarUrl ? `<image data-testid="profile-avatar" role="img" href="${encodeHTML(avatarUrl)}" x="0" y="0" width="32" height="32" preserveAspectRatio="xMidYMid slice" clip-path="url(#profile-avatar-clip)" aria-label="GitHub avatar for @${encodeHTML(login)}" />` : ""}
+        <text class="profile-login" x="45" y="14">@${encodeHTML(compactLogin)}</text>
+        <text class="profile-meta" x="45" y="31">${followers.toLocaleString()} Followers · ${following.toLocaleString()} Following</text>
+      </g>
+      <defs><clipPath id="profile-avatar-clip"><circle cx="16" cy="16" r="16" /></clipPath></defs>`
+    : "";
+
   if (statItems.length === 0 && hide_rank) {
     throw new CustomError(
       "Could not render stats card.",
@@ -448,7 +473,7 @@ const renderStatsCard = (stats, options = {}) => {
     ? Math.ceil(statItems.length / 2)
     : statItems.length;
   const height = Math.max(
-    45 + (rowCount + 1) * lheight,
+    profileHeaderHeight + 45 + (rowCount + 1) * lheight,
     hide_rank ? 0 : statItems.length ? 150 : 180,
   );
 
@@ -530,7 +555,7 @@ const renderStatsCard = (stats, options = {}) => {
 
   card.setAccessibilityLabel({
     title: `${card.title}, Rank: ${rank.level}`,
-    desc: `${labels}. Rank: ${rank.level}, top ${rank.percentile}% of GitHub users.`,
+    desc: `${hasProfile ? `GitHub profile: @${login}; Followers: ${followers}; Following: ${following}. ` : ""}${labels}. Rank: ${rank.level}, top ${rank.percentile}% of GitHub users.`,
   });
 
   const statsBody = useTwoColumnLayout
@@ -554,7 +579,8 @@ const renderStatsCard = (stats, options = {}) => {
   return card.render(`
     ${rankCircle}
     <svg x="0" y="0">
-      ${statsBody}
+      ${profileHeader}
+      <g transform="translate(0, ${profileHeaderHeight})">${statsBody}</g>
     </svg>
   `);
 };

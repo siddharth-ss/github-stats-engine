@@ -61,6 +61,71 @@ describe("Test renderStatsCard", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("should render dynamic profile metadata inside the stats card", () => {
+    const profileStats = {
+      ...stats,
+      login: "siddharth-ss",
+      avatarUrl: "https://avatars.example/siddharth.png",
+      followers: 10,
+      following: 1,
+    };
+
+    document.body.innerHTML = renderStatsCard(profileStats);
+
+    expect(queryByTestId(document.body, "profile-header")).toBeInTheDocument();
+    expect(queryByTestId(document.body, "profile-avatar")).toHaveAttribute(
+      "href",
+      profileStats.avatarUrl,
+    );
+    expect(queryByTestId(document.body, "profile-header")).toHaveTextContent(
+      "@siddharth-ss",
+    );
+    expect(queryByTestId(document.body, "profile-header")).toHaveTextContent(
+      "10 Followers · 1 Following",
+    );
+    expect(document.querySelector(".profile-header")).toBeInTheDocument();
+  });
+
+  it("should update profile metadata for another username", () => {
+    const profileStats = {
+      ...stats,
+      login: "octocat",
+      avatarUrl: "https://avatars.example/octocat.png",
+      followers: 42,
+      following: 8,
+    };
+
+    const svg = renderStatsCard(profileStats);
+
+    expect(svg).toContain("@octocat");
+    expect(svg).toContain("42 Followers · 8 Following");
+    expect(svg).toContain(profileStats.avatarUrl);
+    expect(svg).not.toContain("@siddharth-ss");
+  });
+
+  it("should keep profile metadata when title and rank are hidden", () => {
+    const profileStats = {
+      ...stats,
+      login: "narrow-user",
+      avatarUrl: "https://avatars.example/narrow-user.png",
+      followers: 21,
+      following: 3,
+    };
+
+    const svg = renderStatsCard(profileStats, {
+      card_width: 320,
+      hide_title: true,
+      hide_rank: true,
+    });
+
+    expect(svg).toContain(profileStats.avatarUrl);
+    expect(svg).toContain("@narrow-user");
+    expect(svg).toContain("21 Followers");
+    expect(svg).toContain("3 Following");
+    expect(svg).not.toContain('data-testid="card-title"');
+    expect(svg).not.toContain('data-testid="rank-circle"');
+  });
+
   it("should have proper name apostrophe", () => {
     document.body.innerHTML = renderStatsCard({ ...stats, name: "Anil Das" });
 

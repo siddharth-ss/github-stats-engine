@@ -42,6 +42,7 @@ const GRAPHQL_STATS_QUERY = `
     user(login: $login) {
       name
       login
+      avatarUrl
       contributionsCollection {
         totalCommitContributions,
         totalPullRequestReviewContributions
@@ -62,6 +63,9 @@ const GRAPHQL_STATS_QUERY = `
         totalCount
       }
       followers {
+        totalCount
+      }
+      following {
         totalCount
       }
       repositoryDiscussions @include(if: $includeDiscussions) {
@@ -243,6 +247,10 @@ const fetchStats = async (
 
   const stats = {
     name: "",
+    login: "",
+    avatarUrl: "",
+    followers: 0,
+    following: 0,
     totalPRs: 0,
     totalPRsMerged: 0,
     mergedPRsPercentage: 0,
@@ -287,6 +295,10 @@ const fetchStats = async (
   const user = res.data.data.user;
 
   stats.name = user.name || user.login;
+  stats.login = user.login || username;
+  stats.avatarUrl = user.avatarUrl || "";
+  stats.followers = user.followers?.totalCount ?? 0;
+  stats.following = user.following?.totalCount ?? 0;
 
   // if include_all_commits, fetch all commits using the REST API.
   if (include_all_commits) {
