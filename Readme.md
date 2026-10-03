@@ -874,6 +874,10 @@ By default, GitHub does not lay out the cards side by side. To do that, you can 
 
 You can keep your fork, and thus your private Vercel instance up to date with the upstream using GitHub's [Sync Fork button](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork). You can also use the [pull](https://github.com/wei/pull) package created by [@wei](https://github.com/wei) to automate this process.
 
+## Maintenance Notes
+
+Small documentation updates are used to keep the project guidance current as the implementation evolves.
+
 # Contributions and attribution
 
 Contributions and improvements are welcome.
