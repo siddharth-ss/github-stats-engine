@@ -30,8 +30,8 @@ returns its existing missing-username error.
 For local Express usage, request
 `http://localhost:9004/?username=siddharth-ss&show_icons=true`. The same
 handlers are available as Vercel serverless endpoints at `/api`, `/api/pin`,
-`/api/top-langs`, `/api/streak`, `/api/wakatime`, and `/api/gist` after you
-deploy this repository with your own environment variables.
+`/api/top-langs`, `/api/streak`, `/api/wakatime`, `/api/gist`, and
+`/api/profile` after you deploy this repository with your own environment variables.
 
 The main stats card supports `username`, `theme`, `hide`, `hide_border`,
 `hide_title`, `show_icons`, `include_all_commits`, `cache_seconds`,
