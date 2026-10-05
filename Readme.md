@@ -876,7 +876,7 @@ You can keep your fork, and thus your private Vercel instance up to date with th
 
 ## Maintenance Notes
 
-Small documentation updates are used to keep the project guidance current as the implementation evolves.
+Small documentation updates keep the project guidance current as the implementation evolves. The profile API is also documented here for completeness.
 
 # Contributions and attribution
 
