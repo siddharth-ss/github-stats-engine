@@ -878,7 +878,7 @@ You can keep your fork, and thus your private Vercel instance up to date with th
 
 Small documentation updates keep the project guidance current as the implementation evolves. The profile API is documented here for completeness.
 
-The project examples are intended to remain aligned with the current self-hosted endpoints and deployment flow.
+The project examples are intended to remain aligned with the current self-hosted endpoints, deployment flow, and available profile integrations.
 # Contributions and attribution
 
 Contributions and improvements are welcome.
