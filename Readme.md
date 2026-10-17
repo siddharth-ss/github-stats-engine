@@ -878,7 +878,7 @@ You can keep your fork, and thus your private Vercel instance up to date with th
 
 Small documentation updates keep the project guidance current as the implementation evolves. The profile API is documented here for completeness, easier local testing, and clearer project maintenance. Examples should be checked against the deployed endpoint before publishing, so the README stays consistent with the current service behavior.
 
-The project examples are intended to remain aligned with the current self-hosted endpoints, deployment flow, and available profile integrations. Endpoint changes should be reflected in both usage examples and deployment notes. Clear setup instructions help new users reproduce the service locally before deploying it. Keep configuration examples separate from real credentials, and never commit access tokens or local environment files. Before releasing a change, verify that the documented commands and endpoint paths match the current implementation.
+The project examples are intended to remain aligned with the current self-hosted endpoints, deployment flow, and available profile integrations. Endpoint changes should be reflected in both usage examples and deployment notes. Clear setup instructions help new users reproduce the service locally before deploying it. Keep configuration examples separate from real credentials, and never commit access tokens or local environment files. Before releasing a change, verify that the documented commands and endpoint paths match the current implementation. For troubleshooting, record the exact request path and the observed response before changing configuration.
 # Contributions and attribution
 
 Contributions and improvements are welcome.
