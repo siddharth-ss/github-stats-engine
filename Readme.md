@@ -879,6 +879,18 @@ You can keep your fork, and thus your private Vercel instance up to date with th
 Small documentation updates keep the project guidance current as the implementation evolves. The profile API is documented here for completeness, easier local testing, and clearer project maintenance. Examples should be checked against the deployed endpoint before publishing, so the README stays consistent with the current service behavior.
 
 The project examples are intended to remain aligned with the current self-hosted endpoints, deployment flow, and available profile integrations. Endpoint changes should be reflected in both usage examples and deployment notes. Clear setup instructions help new users reproduce the service locally before deploying it. Keep configuration examples separate from real credentials, and never commit access tokens or local environment files. Before releasing a change, verify that the documented commands and endpoint paths match the current implementation. For troubleshooting, record the exact request path and the observed response before changing configuration. When reporting an issue, include the runtime version and a redacted error message, but never share tokens or other secrets. A minimal reproduction and the steps that trigger the problem can also make reports easier to investigate. Before opening a report, check existing issues for a matching symptom to avoid duplicate investigation.
+## Proposing a change
+
+For a focused contribution, use this workflow:
+
+1. Create a branch from `main` for the change.
+2. Keep the change small and describe its purpose in the commit message.
+3. Run the relevant checks locally before opening a pull request.
+4. Open a pull request against `main` and explain what changed, why it helps, and how it was checked.
+5. Address review feedback and confirm the checks pass before merging.
+
+For documentation-only changes, review the rendered Markdown and verify that links, commands, and endpoint paths are accurate.
+
 # Contributions and attribution
 
 Contributions and improvements are welcome.
