@@ -891,6 +891,16 @@ For a focused contribution, use this workflow:
 
 For documentation-only changes, review the rendered Markdown and verify that links, commands, and endpoint paths are accurate.
 
+## README maintenance checklist
+
+Before publishing a documentation change, check that:
+
+- [ ] Commands and configuration names match the current implementation.
+- [ ] Example URLs use the correct endpoint and query parameters.
+- [ ] Links point to the intended repository pages or documentation.
+- [ ] No personal access tokens, secrets, or local environment files are included.
+- [ ] The Markdown renders correctly on GitHub.
+
 # Contributions and attribution
 
 Contributions and improvements are welcome.
