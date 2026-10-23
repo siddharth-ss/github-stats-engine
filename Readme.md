@@ -901,6 +901,16 @@ Before publishing a documentation change, check that:
 - [ ] No personal access tokens, secrets, or local environment files are included.
 - [ ] The Markdown renders correctly on GitHub.
 
+## Troubleshooting checklist
+
+When a stats card does not display as expected, check these items in order:
+
+- Confirm the deployment is reachable and the requested endpoint path is correct.
+- Verify required environment variables are configured in the hosting environment.
+- Check the deployment logs for the first relevant error message.
+- Test the endpoint with a known username and simple query parameters.
+- Redact tokens, cookies, and other secrets before sharing logs or URLs in an issue.
+
 # Contributions and attribution
 
 Contributions and improvements are welcome.
