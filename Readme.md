@@ -911,6 +911,16 @@ When a stats card does not display as expected, check these items in order:
 - Test the endpoint with a known username and simple query parameters.
 - Redact tokens, cookies, and other secrets before sharing logs or URLs in an issue.
 
+## Deployment verification checklist
+
+After deploying an update, verify the service from the outside:
+
+- [ ] Open the deployed base URL and confirm it responds.
+- [ ] Request the specific endpoint changed and check its response.
+- [ ] Review hosting logs for startup errors or missing configuration.
+- [ ] Confirm cache behavior matches the intended refresh interval.
+- [ ] Record the deployment URL and test result in the change notes, without including secrets.
+
 # Contributions and attribution
 
 Contributions and improvements are welcome.
