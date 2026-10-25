@@ -921,6 +921,16 @@ After deploying an update, verify the service from the outside:
 - [ ] Confirm cache behavior matches the intended refresh interval.
 - [ ] Record the deployment URL and test result in the change notes, without including secrets.
 
+## Troubleshooting response checklist
+
+When investigating an endpoint failure, capture these details before changing code:
+
+- The endpoint path and query parameters used, with secrets removed.
+- The HTTP status code and a short excerpt of the response.
+- Whether the issue happens locally, in production, or in both places.
+- The relevant timestamp and sanitized server-log message.
+- The most recent change that could have affected the endpoint.
+
 # Contributions and attribution
 
 Contributions and improvements are welcome.
