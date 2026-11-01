@@ -407,6 +407,9 @@ Change the `?username=` value to your GitHub username.
 [![GitHub Streak](https://YOUR-DEPLOYMENT-DOMAIN.example/api/streak?username=YOUR_GITHUB_USERNAME)](https://github.com/siddharth-ss/github-stats-engine)
 ```
 
+> [!NOTE]\
+> The streak endpoint uses a fixed one-hour response cache. The `cache_seconds` parameter is not supported by this endpoint, so a recently updated streak may take up to an hour to appear on the card. This delay affects the generated card cache; check your GitHub contribution calendar separately to confirm the underlying activity.
+
 ## Options-st
 
 You can customize the appearance of the streak card using the `theme` parameter.
