@@ -408,7 +408,7 @@ Change the `?username=` value to your GitHub username.
 ```
 
 > [!NOTE]\
-> The streak endpoint uses a fixed one-hour response cache. The `cache_seconds` parameter is not supported by this endpoint, so a recently updated streak may take up to an hour to appear on the card. This delay affects the generated card cache; check your GitHub contribution calendar separately to confirm the underlying activity.
+> The streak endpoint uses a fixed one-hour response cache. The `cache_seconds` parameter is not supported by this endpoint, so a recently updated streak may take up to an hour to appear on the card. This delay affects the generated card cache; check your GitHub contribution calendar separately to confirm the underlying activity. See [streak endpoint behavior](docs/streak-endpoint-behavior.md) for the UTC calculation, cache layers, and verification steps.
 
 ## Options-st
 
